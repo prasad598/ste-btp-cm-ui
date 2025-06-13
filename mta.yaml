@@ -1,0 +1,80 @@
+_schema-version: "3.2"
+ID: ste-btp-cm
+version: 0.0.1
+modules:
+- name: ste-btp-cm-destination-content
+  type: com.sap.application.content
+  requires:
+  - name: ste-btp-cm-destination-service
+    parameters:
+      content-target: true
+  - name: ste-btp-cm_html_repo_host
+    parameters:
+      service-key:
+        name: ste-btp-cm_html_repo_host-key
+  - name: uaa_ste-btp-cm
+    parameters:
+      service-key:
+        name: uaa_ste-btp-cm-key
+  parameters:
+    content:
+      instance:
+        destinations:
+        - Name: ste_btp_cm_ar_ste_btp_cm_html_repo_host
+          ServiceInstanceName: ste-btp-cm-html5-app-host-service
+          ServiceKeyName: ste-btp-cm_html_repo_host-key
+          sap.cloud.service: ste-btp-cm-ar
+        - Authentication: OAuth2UserTokenExchange
+          Name: ste_btp_cm_ar_uaa_ste_btp_cm
+          ServiceInstanceName: ste-btp-cm-xsuaa-service
+          ServiceKeyName: uaa_ste-btp-cm-key
+          sap.cloud.service: ste-btp-cm-ar
+        existing_destinations_policy: ignore
+  build-parameters:
+    no-source: true
+- name: ste-btp-cm_ui_deployer
+  type: com.sap.application.content
+  path: .
+  requires:
+  - name: ste-btp-cm_html_repo_host
+    parameters:
+      content-target: true
+  build-parameters:
+    build-result: resources
+    requires:
+    - artifacts:
+      - ste-btp-cm-ui-content.zip
+      name: ste-btp-cm-ui
+      target-path: resources/
+- name: ste-btp-cm-ui
+  type: html5
+  path: ste-btp-cm-ui
+  build-parameters:
+    builder: custom
+    commands:
+    - npm install
+    - npm run build
+    supported-platforms: []
+resources:
+- name: ste-btp-cm-destination-service
+  type: org.cloudfoundry.managed-service
+  parameters:
+    config:
+      HTML5Runtime_enabled: true
+      version: 1.0.0
+    service: destination
+    service-name: ste-btp-cm-destination-service
+    service-plan: lite
+- name: ste-btp-cm_html_repo_host
+  type: org.cloudfoundry.managed-service
+  parameters:
+    service: html5-apps-repo
+    service-name: ste-btp-cm-html5-app-host-service
+    service-plan: app-host
+- name: uaa_ste-btp-cm
+  type: org.cloudfoundry.managed-service
+  parameters:
+    path: ./xs-security.json
+    service: xsuaa
+    service-name: ste-btp-cm-xsuaa-service
+    service-plan: application

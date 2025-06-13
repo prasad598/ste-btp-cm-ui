@@ -1,0 +1,12 @@
+{
+  "name": "project",
+  "version": "0.1.0",
+  "private": true,
+  "devDependencies": {
+    "@sap/approuter": "14.4.2",
+    "@sap/html5-repo-mock": "2.1.5"
+  },
+  "scripts": {
+    "build-ste-btp-cm-ui": "cd ste-btp-cm-ui && if [ ! -d ${workspaceFolder}/ste-btp-cm/ste-btp-cm-ui/node_modules/react-scripts ] && [ ! -d ${workspaceFolder}/ste-btp-cm/node_modules/react-scripts ]; then npm i; fi && npm run build"
+  }
+}
